@@ -1,0 +1,17 @@
+menu "Example configuration"
+
+    config EXAMPLE_UART_NUM
+        int "UART peripheral number"
+        range 0 2
+        default 1
+
+    config EXAMPLE_UART_RX_PIN
+        int "UART RX pin"
+        range 0 63
+        default 21
+
+    config EXAMPLE_UART_BAUD
+        int "UART RX baud rate"
+        default 9600
+
+endmenu

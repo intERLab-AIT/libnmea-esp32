@@ -17,9 +17,11 @@
 #include "gpvtg.h"
 #include "gptxt.h"
 #include "gpgsv.h"
+#include "sdkconfig.h"
 
-#define UART_NUM                UART_NUM_1
-#define UART_RX_PIN             21
+#define UART_NUM                CONFIG_EXAMPLE_UART_NUM
+#define UART_RX_PIN             CONFIG_EXAMPLE_UART_RX_PIN
+#define UART_BAUD               CONFIG_EXAMPLE_UART_BAUD
 #define UART_RX_BUF_SIZE        (1024)
 
 static void uart_setup();
@@ -28,13 +30,14 @@ static void read_and_parse_nmea();
 void app_main()
 {
     uart_setup();
+    printf("Example ready, receiving on UART%d, GPIO%d at %d baud\n", UART_NUM, UART_RX_PIN, UART_BAUD);
     read_and_parse_nmea();
 }
 
 static void uart_setup()
 {
     uart_config_t uart_config = {
-            .baud_rate = 9600,
+            .baud_rate = UART_BAUD,
             .data_bits = UART_DATA_8_BITS,
             .parity = UART_PARITY_DISABLE,
             .stop_bits = UART_STOP_BITS_1,
@@ -66,16 +69,20 @@ static void read_and_parse_nmea()
         nmea_s *data;
         total_bytes += read_bytes;
 
+        printf("Read %d bytes (%d total)\n", read_bytes, total_bytes);
+
         /* find start (a dollar sign) */
         char* start = memchr(buffer, '$', total_bytes);
         if (start == NULL) {
             total_bytes = 0;
+            printf("$ not found yet\n");
             continue;
         }
 
         /* find end of line */
         char* end = memchr(start, '\r', total_bytes - (start - buffer));
         if (NULL == end || '\n' != *(++end)) {
+            printf("end not found yet, end=%p, *end=%d\n", end, (int) *end);
             continue;
         }
         end[-1] = NMEA_END_CHAR_1;

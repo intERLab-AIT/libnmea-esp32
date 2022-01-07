@@ -3,5 +3,12 @@
 .project
 example/build
 example/sdkconfig
+example/sdkconfig.old
 .DS_Store
 dist/
+__pycache__
+test.log
+flash_image.bin
+.pytest_cache
+.vscode
+.idea
